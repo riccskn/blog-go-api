@@ -38,7 +38,8 @@ func (r *Repository) All() (*[]model.Post, error) {
 	return &posts, nil
 }
 
-func (r Repository) Create(dto *dto.PostDTO) (*model.Post, error) {
+func (r *Repository) Create(dto *dto.PostDTO) (*model.Post, error) {
+
 	var post model.Post
 	db := r.db.Model(&post)
 
@@ -53,4 +54,20 @@ func (r Repository) Create(dto *dto.PostDTO) (*model.Post, error) {
 	}
 
 	return &post, nil
+}
+
+func (r *Repository) Delete(id int64) (err error) {
+
+	var post model.Post
+	db := r.db.Model(&post)
+
+	query := db.Debug().Select("*").Where("id = ?", id).Find(post)
+
+	if query.RowsAffected == 0 {
+		return errors.New("Invalid id")
+	}
+
+	query.Delete(post)
+
+	return nil
 }
